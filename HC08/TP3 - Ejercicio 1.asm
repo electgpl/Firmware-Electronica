@@ -30,7 +30,7 @@ INICIO	bset	0,PORTD			;Setea a 1 la salida 0 del puerto D
 DELAY	mov	#$B9,Var2		;[5]Se carga el valor 185 a Var2
 LOOP2	mov	#$FF,Var1		;[5]Se carga el valor 255 a Var1
 	dec	Var2			;[4]Se decrementa Var2
-	beq	FIN				;[3]Si Var2=0 salta a FIN
+	beq	FIN			;[3]Si Var2=0 salta a FIN
 LOOP1	dec	Var1			;[4]Se decrementa Var1
 	beq	LOOP2			;[3]Si Var1=0 salta a LOOP2 (Externo)
 	bra	LOOP1			;[3]Salta a LOOP1 (Interno)
