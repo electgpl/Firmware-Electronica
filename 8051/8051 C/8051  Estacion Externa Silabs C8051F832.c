@@ -5,14 +5,14 @@
 // El enlace se realiza mediante una comunicacion ASK OOK UHF sobre UART Invertido a 600bps
 // Microcontrolador Silabs C8051F832
 //*********************************************************************************************************
-#include <REG51F800.H>									     //Header de Silabs C8051F832
+#include <REG51F800.H>					     //Header de Silabs C8051F832
 #include <intrins.h>                                         //Biblioteca para funciones de assembler para el Delay
 #include <stdio.h>                                           //Biblioteca standar de entrada y salida
 //*********************************************************************************************************
 // Delay Bloqueante Micro Segundos
 //*********************************************************************************************************
 void delay_us(unsigned int us_count){                        //Función para delay de micro-segundos
-	 int t=0;
+   int t=0;
    while(us_count!=0){                                       //Mientras que el contador es distinto de cero
       for(t=0;t<16;t++){                                     //16MIPS dividido en 16 para 1us
          _nop_();                                            //Ejecuta función NOP de ensamblador
@@ -100,11 +100,11 @@ unsigned int recibeDato(){                                   //Funcion que recib
 // Funcion que realiza la lectura del sensor LDR y acondiciona el valor
 //*********************************************************************************************************
 int lecturaLDR(void){                                        //Funcion que realiza la lectura del ADC para el LDR
-   unsigned int adval;									     //Variable donde se guarda el valor del ADC
+   unsigned int adval;					     //Variable donde se guarda el valor del ADC
    AD0BUSY = 1;                                              //Inicia conversion de ADC
    while (AD0BUSY);                                          //Espera que finalice la conversion
-   adval = ADC0L + (ADC0H << 8);							 //Lee el ADC de 0 a 511
-   return(adval);                                  			 //Retorna el valor del ADC canal 0
+   adval = ADC0L + (ADC0H << 8);			     //Lee el ADC de 0 a 511
+   return(adval);                                  	     //Retorna el valor del ADC canal 0
 } 
 //*********************************************************************************************************
 // Funcion que realiza el parse de datos y armado del payload para enviar por UART
@@ -151,8 +151,8 @@ void configuraADC(void){
 // Realiza el timer de Sleep y WakeUp
 //*********************************************************************************************************
 void main(){                                                 //Función principal
-	 configuraUART();										 //Función que configura UART
-	 configuraADC();										 //Función que configura ADC
+	 configuraUART();				     //Función que configura UART
+	 configuraADC();				     //Función que configura ADC
 	 printf("CONFIGURADO\r"); 
 	 delay_ms(500); 
    while(1){                                                 //Loop principal repetitivo
