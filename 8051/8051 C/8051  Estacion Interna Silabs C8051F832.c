@@ -42,12 +42,12 @@ static int datoExt[3];                                       //Variable donde se
 //*********************************************************************************************************
 // Configuracion de pines del LCD
 //*********************************************************************************************************
-sbit LCD_RS = P0^0;									         //Register select
-sbit LCD_EN = P0^1;										     //Enable
-sbit LCD_D4 = P0^2;										     //Data bits
-sbit LCD_D5 = P0^3;											 //Data bits
-sbit LCD_D6 = P0^4;											 //Data bits
-sbit LCD_D7 = P0^6;											 //Data bits
+sbit LCD_RS = P0^0;									 //Register select
+sbit LCD_EN = P0^1;									 //Enable
+sbit LCD_D4 = P0^2;									 //Data bits
+sbit LCD_D5 = P0^3;									 //Data bits
+sbit LCD_D6 = P0^4;									 //Data bits
+sbit LCD_D7 = P0^6;									 //Data bits
 //*********************************************************************************************************
 // Funcion de escritura LCD
 //*********************************************************************************************************
