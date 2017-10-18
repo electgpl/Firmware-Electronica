@@ -1,29 +1,29 @@
 #include<reg51.h>
 void UART_Init(int baudrate){ 
-   SCON=0x50;  									// Asynchronous mode, 8-bit data and 1-stop bit
-   TMOD=0x20;  									//Timer1 in Mode2.
-   TH1=256-(11059200UL)/(long)(32*12*baudrate); // Load timer value for baudrate generation
-   TR1=1;      									//Turn ON the timer for Baud rate generation
+   SCON=0x50;  									      //Asynchronous mode, 8-bit data and 1-stop bit
+   TMOD=0x20;  									      //Timer1 in Mode2.
+   TH1=256-(11059200UL)/(long)(32*12*baudrate); //carga el timer para generar el baudrate
+   TR1=1;      									      //enciende el timer
 }
 void UART_TxChar(char ch){
-   SBUF=ch;      								// Load the data to be transmitted
-   while(TI==0);   								// Wait till the data is trasmitted
-   TI=0;         								//Clear the Tx flag for next cycle.
+   SBUF=ch;      								         //carga el dato a transmitir
+   while(TI==0);   								      //espera a que este disponible la transmision
+   TI=0;         								         //borra el flag de transmision
 }
 char UART_RxChar(void){
-   while(RI==0);     							// Wait till the data is received
-   RI=0;             							// Clear Receive Interrupt Flag for next cycle
-   return(SBUF);     							// return the received char
+   while(RI==0);     							      //espera a que el dato sea recibido
+   RI=0;             							      //borra la interrupcion del flag de recpcion
+   return(SBUF);     							      //retorna el dato recibido
 }
 int main(){
    char i,a[]={"Welcome to 8051 Serial Comm, Type the char to be echoed: "};
    char ch;
-   UART_Init(9600);       						//Initialize the UART module with 9600 baud rate
+   UART_Init(9600);       						      //inicializa la uart en 9600bps
    for(i=0;a[i]!=0;i++){
-      UART_TxChar(a[i]); 						// Transmit predefined string
+      UART_TxChar(a[i]); 						      //transmite el dato
    }
    while(1){
-      ch=UART_RxChar(); 						// Receive a char from serial port
-      UART_TxChar(ch);    						// Transmit the received char
+      ch=UART_RxChar(); 						      //recibe el dato
+      UART_TxChar(ch);    						      //retransmite el dato a modo eco
    }
 }
