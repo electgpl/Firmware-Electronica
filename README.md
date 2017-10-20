@@ -20,7 +20,7 @@ Encontrara diversos lenguajes y diversas plataformas :+1:
 
 
 ```c++
-pintf(lcd_putc,"Gracias por leer!");
+printf(lcd_putc,"Gracias por leer!");
 ```
 
 
