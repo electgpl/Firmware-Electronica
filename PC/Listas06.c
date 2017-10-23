@@ -10,6 +10,8 @@ por precio. Debe tener en cuenta las distintas posibilidades:
 
 Tiene funciones para ordenar segun los datos
 
+SUGERENCIA: utilizar compilador y Debugger Online, https://www.onlinegdb.com/online_c_compiler
+
 */
 
 #include <stdio.h>
@@ -39,8 +41,8 @@ typedef struct {
 #define NIL (NODO *)0
 
 void iniciar_cola(LISTA *pt) {
-    pt -> primero = NIL;
-    pt -> ultimo = NIL;
+    pt->primero = NIL;
+    pt->ultimo = NIL;
     return;
 }
 
@@ -53,7 +55,7 @@ void poner_ultimo(LISTA *cola, int codi, float preci, char *s) {
         exit(1);
     }
 
-    if((aux -> pd = (DATOS *)malloc(sizeof(DATOS))) == NULL) {
+    if((aux->pd = (DATOS *)malloc(sizeof(DATOS))) == NULL) {
         printf("Sin memoria para DATOS");
         exit(1);
     }
@@ -63,32 +65,32 @@ void poner_ultimo(LISTA *cola, int codi, float preci, char *s) {
         exit(1);
     }
 
-    aux -> pd -> cod = codi;
-    aux -> pd -> pre = preci;
+    aux->pd->cod = codi;
+    aux->pd->pre = preci;
     strcpy(auxstr,s);
-    aux -> pd -> descr = auxstr;
+    aux->pd->descr = auxstr;
 
-    if(cola -> primero == NIL)
-        cola -> primero = aux;
+    if(cola->primero == NIL)
+        cola->primero = aux;
     else
-        cola -> ultimo -> proximo = aux;
+        cola->ultimo->proximo = aux;
 
-    cola -> ultimo = aux;
-    aux -> proximo = NIL;
+    cola->ultimo = aux;
+    aux->proximo = NIL;
     return;
 }
 
 NODO *sacar_primero(LISTA *cola) {
     NODO *msg;
     
-    if(cola -> primero == NIL)
+    if(cola->primero == NIL)
         return(NIL);
     
-    msg = cola -> primero;
-    cola -> primero = msg -> proximo;
+    msg = cola->primero;
+    cola->primero = msg->proximo;
 
-    if(cola -> ultimo == msg)
-        cola -> ultimo = NIL;
+    if(cola->ultimo == msg)
+        cola->ultimo = NIL;
 
     return(msg);
 }
@@ -97,8 +99,8 @@ void listar_cola(LISTA *cola) {
     int n = 0;
     NODO *l;
 
-    for(l = cola -> primero ; l != NIL ; l = l -> proximo) {
-        printf("%-15s : %d      %4d     %6.2f \n", l -> pd -> descr, n, l -> pd -> cod, l -> pd -> pre );
+    for(l = cola->primero ; l != NIL ; l = l->proximo) {
+        printf("%-15s : %d      %4d     %6.2f \n", l->pd->descr, n, l->pd->cod, l->pd->pre );
         n++;
     }
 
@@ -109,12 +111,12 @@ void ord_list_pre(LISTA *cola) {
     NODO *j, *i;
     DATOS *temp;
     
-    for(j = cola -> primero ; j != NIL ; j -> proximo)
-        for(i = j -> proximo ; i != NIL ; i = i -> proximo)
-            if(j -> pd -> pre > i -> pd -> pre){
-                temp = j -> pd;
-                j -> pd = i -> pd;
-                i -> pd = temp;
+    for(j = cola->primero ; j != NIL ; j->proximo)
+        for(i = j->proximo ; i != NIL ; i = i->proximo)
+            if(j->pd->pre > i->pd->pre){
+                temp = j->pd;
+                j->pd = i->pd;
+                i->pd = temp;
             }
     
     return;
@@ -123,12 +125,12 @@ void ord_list_pre(LISTA *cola) {
 void ord_list_cod(LISTA *cola) {
     NODO *j, *i;
     DATOS *temp;
-    for(j = cola -> primero ; j != NIL ; j = j -> proximo)
-        for(i = j -> proximo ; i != NIL ; i = i -> proximo)
-            if(j -> pd -> cod > i -> pd -> cod) {
-                temp = j -> pd;
-                j -> pd = i -> pd;
-                i -> pd = temp;
+    for(j = cola->primero ; j != NIL ; j = j->proximo)
+        for(i = j->proximo ; i != NIL ; i = i->proximo)
+            if(j->pd->cod > i->pd->cod) {
+                temp = j->pd;
+                j->pd = i->pd;
+                i->pd = temp;
             }
 
     return;
@@ -137,12 +139,12 @@ void ord_list_cod(LISTA *cola) {
 void ord_list_descr(LISTA *cola) {
     NODO *j, *i;
     DATOS *temp;
-    for(j = cola -> primero ; j != NIL ; j = j -> proximo)
-        for(i = j -> proximo ; i != NIL ; i = i -> proximo)
-            if(strcmp(j -> pd -> descr , i -> pd -> descr) > 0) {
-                temp = j -> pd;
-                j -> pd = i -> pd;
-                i -> pd = temp;
+    for(j = cola->primero ; j != NIL ; j = j->proximo)
+        for(i = j->proximo ; i != NIL ; i = i->proximo)
+            if(strcmp(j->pd->descr , i->pd->descr) > 0) {
+                temp = j->pd;
+                j->pd = i->pd;
+                i->pd = temp;
             }
 
     return;
@@ -158,7 +160,7 @@ void insertar_precio(LISTA *cola, int co, float pr, char *sn) {
         exit(1);
     }
 
-    if((aux -> pd = (DATOS *)malloc(sizeof(DATOS))) == NULL) {
+    if((aux->pd = (DATOS *)malloc(sizeof(DATOS))) == NULL) {
         printf("Sin memoria para DATOS");
         exit(1);
     }
@@ -168,31 +170,31 @@ void insertar_precio(LISTA *cola, int co, float pr, char *sn) {
         exit(1);
     }
 
-    aux -> pd -> cod = co;
-    aux -> pd -> pre = pr;
+    aux->pd->cod = co;
+    aux->pd->pre = pr;
     strcpy(auxstr,sn);
-    aux -> pd -> descr = auxstr;
+    aux->pd->descr = auxstr;
 
     if(j == NIL) {
-        cola -> primero = cola -> ultimo = aux;
-        aux -> proximo = NIL;
+        cola->primero = cola->ultimo = aux;
+        aux->proximo = NIL;
     } 
-    else if( pr < j -> pd -> pre) {
-             aux -> proximo = j;
-             cola -> primero = aux;
+    else if( pr < j->pd->pre) {
+             aux->proximo = j;
+             cola->primero = aux;
          }
-         else if( pr > cola -> ultimo -> pd -> pre) {
-                  cola -> ultimo -> proximo = aux;
-                  aux -> proximo = NIL;
-                  cola -> ultimo = aux;
+         else if( pr > cola->ultimo->pd->pre) {
+                  cola->ultimo->proximo = aux;
+                  aux->proximo = NIL;
+                  cola->ultimo = aux;
               }
               else {
-                  while (j -> pd -> pre < pr) {
+                  while (j->pd->pre < pr) {
                       jant = j;
-                      j = j -> proximo;
+                      j = j->proximo;
                   }
-                  aux -> proximo = jant -> proximo;
-                  jant -> proximo = aux;
+                  aux->proximo = jant->proximo;
+                  jant->proximo = aux;
               }
 
     return;
