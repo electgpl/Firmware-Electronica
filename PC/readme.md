@@ -10,10 +10,10 @@ Un nodo de una lista dinámica lo declararemos como una estructura de datos con 
 
 ```c
 struct nodo {
-            tipo_dato1 identificador1;
-            tipo_dato2 identificador2;
-            ...
-            struct nodo *siguiente_elemento;
+   tipo_dato1 identificador1;
+   tipo_dato2 identificador2;
+    ...
+   struct nodo *siguiente_elemento;
 }
 ```
 
@@ -24,10 +24,9 @@ Además es importante tener en cuenta en la declaración que debemos declarar ci
 La declaración de la estructura quedaría así:
 
 ```c
-typedef struct _nodo
-{
-int dato;
-struct _nodo *siguiente;
+typedef struct _nodo {
+   int dato;
+   struct _nodo *siguiente;
 } tipoNodo;
 ```
 
@@ -36,16 +35,14 @@ Un dato importante es que al declarar el primer nodo de una lista hay que inicia
 La declaración completa de una lista de una estructura de enteros quedaría así:
 
 ```c
-struct Nodo
-{
-int dato1;
-int dato2;
-Nodo *siguiente;
+struct Nodo {
+   int dato1;
+   int dato2;
+   Nodo *siguiente;
 };
 
-int main (void)
-{
-            struct Nodo *lista=NULL;
+int main (void) {
+   struct Nodo *lista=NULL;
 }
 ```
 
@@ -56,39 +53,33 @@ Con esto tenemos declarada la estructura y el inicio de una lista, ahora vamos a
 Lo primero que debemos hacer para comenzar una lista y asignar los primeros valores es reservar un espacio de memoria, para ello utilizaremos la librería stdlib.h y su función malloc:
 
 ```c
-struct Nodo
-{
-int dato1;
-int dato2;
-Nodo *siguiente;
+struct Nodo {
+   int dato1;
+   int dato2;
+   Nodo *siguiente;
 };
 
-int main (void)
-{
-            struct Nodo *lista=NULL;
-            lista = malloc( sizeof(struct Nodo) );
+int main (void) {
+   struct Nodo *lista=NULL;
+   lista = malloc( sizeof(struct Nodo) );
 }
 ```
 
 Con esto ya hemos iniciado la lista, ahora vamos a hacer que las variables enteras tengan datos y que el puntero apunte a null (ya que aún no tenemos ningún nodo que continúe).
 
 ```c
-struct Nodo
-{
-int dato1;
-int dato2;
-Nodo *siguiente;
+struct Nodo {
+   int dato1;
+   int dato2;
+   Nodo *siguiente;
 };
 
-int main (void)
-{
-            struct Nodo *lista=NULL;
-            lista = malloc( sizeof(struct Nodo) );
-
-            lista -> dato1=10;
-lista -> dato2=25;
-lista -> siguiente =NULL;
-
+int main (void) {
+   struct Nodo *lista=NULL;
+   lista = malloc( sizeof(struct Nodo) );
+   lista -> dato1=10;
+   lista -> dato2=25;
+   lista -> siguiente =NULL;
 }
 ```
 
@@ -105,29 +96,25 @@ Para evitar esto usaremos un puntero auxiliar, para no perder la referencia mien
 El programa quedará así:
 
 ```c
-struct Nodo
-{
-int dato1;
-int dato2;
-Nodo *siguiente;
+struct Nodo {
+   int dato1;
+   int dato2;
+   Nodo *siguiente;
 };
 
-int main (void)
-{
-            struct Nodo *lista=NULL, * aux;
-            lista = malloc( sizeof(struct Nodo) );
+int main (void) {
+   struct Nodo *lista=NULL, * aux;
+   lista = malloc( sizeof(struct Nodo) );
+   lista -> dato1=10;
+   lista -> dato2=25;
+   lista -> siguiente =NULL;
 
-            lista -> dato1=10;
-lista -> dato2=25;
-lista -> siguiente =NULL;
+   aux = lista ;
 
-aux = lista ;
-
-lista = malloc( sizeof(struct Nodo) );
-lista -> dato1=3;
-lista -> dato2=5;
-lista-> siguiente = aux ;
-
+   lista = malloc( sizeof(struct Nodo) );
+   lista -> dato1=3;
+   lista -> dato2=5;
+   lista-> siguiente = aux ;
 }
 ```
 
@@ -152,34 +139,30 @@ Una vez encontremos el nodo cuyo puntero *siguiente apunta a NULL procedemos a a
 El código para añadir un nodo al final de una lista es el siguiente:
 
 ```c
-struct Nodo
-{
-int dato1;
-int dato2;
-Nodo *siguiente;
+struct Nodo {
+   int dato1;
+   int dato2;
+   Nodo *siguiente;
 };
 
-int main (void)
-{
-            struct Nodo *lista=NULL, * aux, *nuevo;
-            lista = malloc( sizeof(struct Nodo) );
+int main (void) {
+   struct Nodo *lista=NULL, * aux, *nuevo;
+   lista = malloc( sizeof(struct Nodo) );
+   lista -> dato1=10;
+   lista -> dato2=25;
+   lista -> siguiente =NULL;
 
-            lista -> dato1=10;
-lista -> dato2=25;
-lista -> siguiente =NULL;
+   aux = lista ;
 
-aux = lista ;
+   while (aux->siguiente != NULL) {
+      aux = aux-> siguiente;
+   }
 
-while (aux->siguiente != NULL)
-{
-            aux = aux-> siguiente;
-}
-
-nuevo = malloc( sizeof(struct Nodo) );
-nuevo-> dato1=2;
-nuevo-> dato2=6;
-nuevo-> siguiente = NULL;
-aux-> siguiente = nuevo ;
+   nuevo = malloc( sizeof(struct Nodo) );
+   nuevo-> dato1=2;
+   nuevo-> dato2=6;
+   nuevo-> siguiente = NULL;
+   aux-> siguiente = nuevo ;
 }
 ```
 
@@ -212,15 +195,14 @@ Esto tampoco es correcto, intentamos avanzar en la lista mediante un puntero que
 La solución, como va a ser costumbre, viene de la mano del puntero *aux, el programa sería así:
 
 ```c
-int main(void)
-{
-struct Nodo * lista = NULL, * aux, * nuevo;
+int main(void) {
+   struct Nodo * lista = NULL, * aux, * nuevo;
 
-aux = lista->sig ;
-free(lista);
-lista = aux;
+   aux = lista->sig ;
+   free(lista);
+   lista = aux;
 
-return 0;
+   return 0;
 }
 ```
 
@@ -231,9 +213,8 @@ return 0;
 El último código de hoy en teoría parece también sencillo, si para borrar el primer elemento de la lista tan sólo se necesita un auxiliar para no perderlo todo, eliminar el último elemento debe ser igualmente fácil, tan sólo tendríamos que posicionarnos en el último elemento de la lista y liberar su memoria.
 
 ```c
-while (aux->siguiente != NULL)
-{
-            aux = aux-> siguiente;
+while (aux->siguiente != NULL) {
+   aux = aux-> siguiente;
 }
 free(aux);
 ```
@@ -252,10 +233,9 @@ struct Nodo * lista = NULL, * aux, * atras;
 atras=NULL;
 aux=lista;
 
-while (aux->siguiente != NULL)
-{
-            atras=aux;
-            aux = aux-> siguiente;
+while (aux->siguiente != NULL) {
+   atras=aux;
+   aux = aux-> siguiente;
 }
 
 free(aux);
@@ -272,21 +252,17 @@ struct Nodo * lista = NULL, * aux, * atras;
 atras=NULL;
 aux=lista;
 
-while (aux->siguiente != NULL)
-{
-            atras=aux;
-            aux = aux-> siguiente;
+while (aux->siguiente != NULL) {
+   atras=aux;
+   aux = aux-> siguiente;
 }
 
 free(aux);
 
-if (atrás==NULL)
-{
-            lista=NULL;
-}
-else
-{
-atras->siguiente = NULL;
+if (atrás==NULL) {
+   lista=NULL;
+} else {
+   atras->siguiente = NULL;
 }
 ```
 
@@ -306,9 +282,9 @@ Estructura utilizada:
 
 ```c
 struct Nodo {
-int dato1;
-int dato2;
-Nodo *siguiente;
+   int dato1;
+   int dato2;
+   Nodo *siguiente;
 };
 
 Añadir nodo en el principio:
@@ -317,17 +293,17 @@ Añadir nodo en el principio:
 struct Nodo * aux;
 
 if (lista == NULL) {
-	lista = malloc(sizeof(struct Nodo));
-	lista->dato1 = 1;
-	lista->dato2 = 2;
-	lista->siguiente = NULL;
+   lista = malloc(sizeof(struct Nodo));
+   lista->dato1 = 1;
+   lista->dato2 = 2;
+   lista->siguiente = NULL;
 } else {
-	aux = lista ;
-	lista = malloc( sizeof(struct Nodo) );
-	lista -> dato1=3;
-	lista -> dato2=4;
-	lista-> siguiente = aux ;
-	}
+   aux = lista ;
+   lista = malloc( sizeof(struct Nodo) );
+   lista -> dato1=3;
+   lista -> dato2=4;
+   lista-> siguiente = aux ;
+   }
 }
 
 Añadir nodo al final:
@@ -336,20 +312,20 @@ Añadir nodo al final:
 struct Nodo * aux, *nuevo;
 
 if (lista == NULL) {
-	lista = malloc(sizeof(struct Nodo));
-	lista->info = valor;
-	lista->siguiente = NULL;
+   lista = malloc(sizeof(struct Nodo));
+   lista->info = valor;
+   lista->siguiente = NULL;
 } else {
-	aux = lista ;
-	while (aux->siguiente != NULL) {
-		aux = aux-> siguiente;
-	}
-	nuevo = malloc( sizeof(struct Nodo) );
-	nuevo-> dato1=2;
-	nuevo-> dato2=6;
-	nuevo-> siguiente = NULL;
-	aux-> siguiente = nuevo ;
-	}
+   aux = lista ;
+   while (aux->siguiente != NULL) {
+      aux = aux-> siguiente;
+   }
+   nuevo = malloc( sizeof(struct Nodo) );
+   nuevo-> dato1=2;
+   nuevo-> dato2=6;
+   nuevo-> siguiente = NULL;
+   aux-> siguiente = nuevo ;
+   }
 }
 
 Borrar nodo al principio:
@@ -357,10 +333,10 @@ Borrar nodo al principio:
 {
 struct Nodo * aux;
 if (lista != NULL) {
-	aux = lista->sig ;
-	free(lista);
-	lista = aux;
-	}
+   aux = lista->sig ;
+   free(lista);
+   lista = aux;
+   }
 }
 
 Borrar nodo al final:
@@ -368,18 +344,18 @@ Borrar nodo al final:
 {
 struct Nodo * aux, * atras;
 if (lista != NULL) {
-	atras=NULL;
-	aux=lista;
-	while (aux->siguiente != NULL) {
-		atras=aux;
-		aux = aux-> siguiente;
-	}
-	free(aux);
-	if (atrás==NULL) {
-		lista=NULL;
-	} else {
-		atras->siguiente = NULL;
-	}
+   atras=NULL;
+   aux=lista;
+   while (aux->siguiente != NULL) {
+      atras=aux;
+      aux = aux-> siguiente;
+   }
+   free(aux);
+   if (atrás==NULL) {
+      lista=NULL;
+   } else {
+      atras->siguiente = NULL;
+   }
 }
 }
 ```
