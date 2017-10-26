@@ -127,6 +127,6 @@ void main(){
       lcdGotoxy(1,1);
       lcdWriteString("   UTN INSPT   ");
       lcdGotoxy(2,1);
-		  lcdWriteString(" LCD con 8051  ");
+      lcdWriteString(" LCD con 8051  ");
    }
 }
