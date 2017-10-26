@@ -65,14 +65,14 @@ void lcdGotoxy(char a, char b){
       lcdCmd(z);
       lcdCmd(y);
    }else{ 
-	    if(a==2){
+      if(a==2){
          temp = 0xC0 + b;
          z = temp>>4;
          y = temp & 0x0F;
          lcdCmd(z);
          lcdCmd(y);
       }
-	 }		
+   }		
 }
 //*********************************************************************************************************
 // Inicializa LCD
