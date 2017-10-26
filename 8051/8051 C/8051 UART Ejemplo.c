@@ -1,5 +1,5 @@
 #include<reg52.h>
-#define Baud_rate 0xFD  												//BAUD RATE 9600                     
+#define Baud_rate 0xFD  									//BAUD RATE 9600                     
 sbit P1_0 = P1^0;
 sbit P1_1 = P1^1;
 sbit P1_2 = P1^2;
@@ -18,8 +18,8 @@ void serialInit(void){
 //*********************************************************************************************************
 void sendByte(unsigned char serialdata){
    SBUF = serialdata;                        		//Carga el dato a enviar por uart
-   while(TI == 0);                            	//Espera a la transmicion completa
-   TI = 0;                                    	//Borra el flag de transmision
+   while(TI == 0);                            	   //Espera a la transmicion completa
+   TI = 0;                                    	   //Borra el flag de transmision
 }
 //*********************************************************************************************************
 // Interrupcion de byte presente en puerto serie
@@ -47,8 +47,8 @@ void serial_ISR (void) interrupt 4{
 // Funcion principal
 //*********************************************************************************************************
 void main(){
-   P1 = 0x00; 																	//Usado para aplicacion
-   P3 = 0x03; 																	//Usado para el serie
+   P1 = 0x00; 												//Usado para aplicacion
+   P3 = 0x03; 												//Usado para el serie
    serialInit();    
    EA = 1;
    ES = 1;
