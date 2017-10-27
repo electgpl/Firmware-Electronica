@@ -21,18 +21,18 @@ static int datoExt[3];                                       //Variable donde se
 //*********************************************************************************************************
 // Configuracion de pines del LCD
 //*********************************************************************************************************
-extern bit RS;                                                                   
-extern bit EN;                           
-extern bit D4;
-extern bit D5;
-extern bit D6;
-extern bit D7;
-sbit RS = P2^0;                                                                   
-sbit EN = P2^1;                            
-sbit D4 = P2^4;
-sbit D5 = P2^5;
-sbit D6 = P2^6;
-sbit D7 = P2^7;
+extern bit RS;                                               //Definicion de pines                                                                   
+extern bit EN;                                               //Definicion de pines                            
+extern bit D4;                                               //Definicion de pines 
+extern bit D5;                                               //Definicion de pines 
+extern bit D6;                                               //Definicion de pines 
+extern bit D7;                                               //Definicion de pines 
+sbit RS = P2^0;                                              //Definicion de pines                                                                    
+sbit EN = P2^1;                                              //Definicion de pines                            
+sbit D4 = P2^4;                                              //Definicion de pines
+sbit D5 = P2^5;                                              //Definicion de pines
+sbit D6 = P2^6;                                              //Definicion de pines
+sbit D7 = P2^7;                                              //Definicion de pines
 //*********************************************************************************************************
 // delay_us Bloqueante Micro Segundos
 //*********************************************************************************************************
@@ -58,13 +58,13 @@ void delay_ms(unsigned int us_count){                        //Funcion para dela
 // Funcion que escribe en puerto
 //*********************************************************************************************************
 void lcdPort(char a){                                        //Funcion para escribir el puerto en 4bit
-    if(a&1) D4=1; 																			     //Evalua si a AND 0001, D4 a HIGH
+    if(a&1) D4=1;                                            //Evalua si a AND 0001, D4 a HIGH
       else  D4=0;                                            //Caso contrario D4 a LOW
-    if(a&2) D5=1; 																			     //Evalua si a AND 0010, D5 a HIGH 
+    if(a&2) D5=1;                                            //Evalua si a AND 0010, D5 a HIGH 
       else  D5=0;                                            //Caso contrario D5 a LOW
-    if(a&4) D6=1; 																			     //Evalua si a AND 0100, D6 a HIGH 
+    if(a&4) D6=1;                                            //Evalua si a AND 0100, D6 a HIGH 
       else  D6=0;                                            //Caso contrario D6 a LOW
-    if(a&8) D7=1; 																			     //Evalua si a AND 1000, D7 a HIGH 
+    if(a&8) D7=1;                                            //Evalua si a AND 1000, D7 a HIGH 
       else  D7=0;                                            //Caso contrario D7 a LOW
  }
  //*********************************************************************************************************
@@ -175,11 +175,11 @@ char *itoa(long int num, char *s){                           //Funcion ITOA (Ent
 //*********************************************************************************************************
 // Funcion para inicializar el puerto serie 9600 @ 11.059MHz
 //*********************************************************************************************************
-void serialInit(void){                   	                   //Funcion para configurar UART
-    TMOD = 0x20;                           			             //Timer 1 en modo 2 - Auto recarga para generar Baudrate
-    SCON = 0x50;                           			             //Serial modo 1, 8bit de dato, 1bit de start, 1bit de stop
-    TH1 = 0xFD;                                              //Carga el baudrate en el timer a 9600bps
-    TR1 = 1;                               			             //Dispara el timer
+void serialInit(void){                                       //Funcion para configurar UART
+    TMOD=0x20;                                               //Timer 1 en modo 2 - Auto recarga para generar Baudrate
+    SCON=0x50;                                               //Serial modo 1, 8bit de dato, 1bit de start, 1bit de stop
+    TH1=0xFD;                                                //Carga el baudrate en el timer a 9600bps
+    TR1=1;                                                   //Dispara el timer
  }
  //*********************************************************************************************************
  // Función Interrupción UART que realiza el parse de datos, validación de Header y Checksum
@@ -331,11 +331,11 @@ void impPantalla(void){                                      //Funcion que impri
 //*********************************************************************************************************
 void main(){                                                 //Funcion principal
    saludoPantalla();                                         //Función de saludo de pantalla
-   P1=0x00; 																	               //Usado para aplicacion
-   P3=0x03; 																	               //Usado para el serie
-   serialInit();    
-   EA=1;
-   ES=1;
+   P1=0x00; 																 //Usado para aplicacion
+   P3=0x03; 															    //Usado para el serie
+   serialInit();                                             //Inicializa puerto serie
+   EA=1;                                                     //Habilitacion de interrupcion Global
+   ES=1;                                                     //Habilitacion de interrupcion Serie
    while(1){                                                 //Loop principal infinito
       leeDHT11();                                            //Funcion que lee DHT11
       delay_ms(2000);                                        //delay_ms de Actualizacion
