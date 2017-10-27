@@ -1,34 +1,70 @@
 //*********************************************************************************************************
-// Programa para la estación meteorológica externa inalámbrica
-// El programa envía Temperatura, Humedad y Luminosidad cada 30 segundos
-// El sistema entra en bajo consumo cuando mientras no realiza mediciones
+// Programa para la estacion meteorologica Interna inalámbrica
+// El programa recibe Temperatura, Humedad y Luminosidad por interrupcion
+// El sistema mide Temperatura y Humedad interior
 // El enlace se realiza mediante una comunicacion ASK OOK UHF sobre UART Invertido a 600bps
+// Se muestra medicion interna y externa en un LCD de 2x16
 // Microcontrolador Silabs C8051F832
 //*********************************************************************************************************
-#include <REG51F800.H>					     //Header de Silabs C8051F832
-#include <intrins.h>                                         //Biblioteca para funciones de assembler para el Delay
-#include <stdio.h>                                           //Biblioteca standar de entrada y salida
+#include <reg52.h>
+#include <REG51F800.H>
+#include <intrins.h>
+#include <stdio.h>
 //*********************************************************************************************************
-// Delay Bloqueante Micro Segundos
+// Variables
 //*********************************************************************************************************
-void delay_us(unsigned int us_count){                        //Función para delay de micro-segundos
+#define HEADER 200                                           //Definicion de valor Header para el payload
+sbit DATA = P1^0;                                            //Pin del bus de un hilo para el DHT11
+static int datoInt[2];                                       //Variable donde se alojan los datos internos
+static int payload[5];                                       //Variable donde se aloja el payload
+static int datoExt[3];                                       //Variable donde se alojan los datos externos
+sbit P0MDIN = 0xF1;                                          //Port 0 Input Mode
+sbit P0SKIP = 0xD4;                                          //Port 0 Skip
+sbit ADC0CF = 0xBC;                                          //ADC0 Configuration
+sbit ADC0CN = 0xE8;                                          //ADC0 Control 0
+sbit AD0BUSY = 0xF8;                                         //ADC0 Busy
+sbit ADC0L = 0xBD;                                           //ADC0 Data Word Low Byte 
+sbit ADC0H = 0xBE;                                           //ADC0 Data Word High Byte
+//*********************************************************************************************************
+// delay_us Bloqueante Micro Segundos
+//*********************************************************************************************************
+void delay_us(unsigned int us_count){                        //Funcion para delay_ms de micro-segundos
    int t=0;
    while(us_count!=0){                                       //Mientras que el contador es distinto de cero
       for(t=0;t<16;t++){                                     //16MIPS dividido en 16 para 1us
-         _nop_();                                            //Ejecuta función NOP de ensamblador
-      }	
-      us_count--;                                            //Decremento del valor de delay
+         _nop_();                                            //Ejecuta funcion NOP de ensamblador
+      }
+      us_count--;                                            //Decremento del valor de delay_ms
    }
 }
 //*********************************************************************************************************
-// Delay Bloqueante Mili Segundos
+// delay_ms Bloqueante Mili Segundos
 //*********************************************************************************************************
-void delay_ms(unsigned int us_count){                        //Función para delay de micro-segundos
+void delay_ms(unsigned int us_count){                        //Funcion para delay_ms de micro-segundos
    while(us_count!=0){                                       //Mientras que el contador es distinto de cero
-      delay_us(1000);                                        //Ejecuta función delay micro segundos
-      us_count--;                                            //Decremento del valor de delay
+      delay_us(1000);                                        //Ejecuta funcion delay_ms micro segundos
+      us_count--;                                            //Decremento del valor de delay_ms
    }
 }
+//*********************************************************************************************************
+// Configuracion ADC pin P0.0
+//*********************************************************************************************************
+void configuraADC(void){
+   #define VREF 3                                            //Tensión de referencia interna
+   P0MDIN=0xFE;                                              //Selecciona pin P0.0 como canal ADC 
+   P0SKIP=0x01;                                              //Decodificacion Crossbar
+   ADC0CF=0xF8;                                              //Habilita ADC 0
+   ADC0CN=0x80;                                              //Habilita conversion en registro
+}
+//*********************************************************************************************************
+// Funcion para inicializar el puerto serie 9600 @ 11.059MHz
+//*********************************************************************************************************
+void serialInit(void){                                       //Funcion para configurar UART
+    TMOD=0x20;                                               //Timer 1 en modo 2 - Auto recarga para generar Baudrate
+    SCON=0x50;                                               //Serial modo 1, 8bit de dato, 1bit de start, 1bit de stop
+    TH1=0xFD;                                                //Carga el baudrate en el timer a 9600bps
+    TR1=1;                                                   //Dispara el timer
+ }
 //*********************************************************************************************************
 // Trama DHT11 - Segun Datasheet
 // ____             ____      ____                                       ___
@@ -43,7 +79,6 @@ void delay_ms(unsigned int us_count){                        //Función para del
 //     |________|                         |...       1 bit
 //      <-50us-> <---------70us---------->
 //*********************************************************************************************************
-sbit DATA = P2^0;                                            //Pin del bus de un hilo para el DHT11
 unsigned int trama[5];                                       //Vector donde se alojan los datos
 //*********************************************************************************************************
 // Funcion de recepcio de Byte
@@ -51,8 +86,8 @@ unsigned int trama[5];                                       //Vector donde se a
 // Retorna el valor en forma de byte, es utilizado en la funcion recibeDato()
 //*********************************************************************************************************
 unsigned int recibeByte(){                                   //Funcion que recibe un Byte
-   unsigned int valorLeido = 0;                              //Valor de retorno de la función
-   int i=0;                                                  //Inicialización del indice
+   unsigned int valorLeido = 0;                              //Valor de retorno de la funcion
+   int i=0;                                                  //Inicializacion del indice
    for(i=0; i<8; i++){                                       //Iteracion para recepcion de bits
       valorLeido <<= 1;                                      //Registro de desplazamiento de bits
       while(DATA==0);                                        //Espera a DATA = 0
@@ -97,65 +132,58 @@ unsigned int recibeDato(){                                   //Funcion que recib
    }
 }
 //*********************************************************************************************************
+// Lee DHT11
+//*********************************************************************************************************
+void leeDHT11(void){                                         //Funcion que lee el DHT11
+   if(recibeDato()==0){                                      //Consulta si hay dato en la entrada del DHT11
+      datoInt[0]=trama[2];                                   //Carga el valor de temperatura DHT en byte 1 del payload
+      datoInt[1]=trama[0];                                   //Carga el valor de humedad DHT en byte 2 del payload
+   }
+}
+//*********************************************************************************************************
 // Funcion que realiza la lectura del sensor LDR y acondiciona el valor
 //*********************************************************************************************************
 int lecturaLDR(void){                                        //Funcion que realiza la lectura del ADC para el LDR
-   unsigned int adval;					     //Variable donde se guarda el valor del ADC
-   AD0BUSY = 1;                                              //Inicia conversion de ADC
-   while (AD0BUSY);                                          //Espera que finalice la conversion
-   adval = ADC0L + (ADC0H << 8);			     //Lee el ADC de 0 a 511
-   return(adval);                                  	     //Retorna el valor del ADC canal 0
+   unsigned int adval;					                             //Variable donde se guarda el valor del ADC
+   AD0BUSY=1;                                                //Inicia conversion de ADC
+   while(AD0BUSY);                                           //Espera que finalice la conversion
+   adval=ADC0L;			                                         //Lee el ADC de 0 a 511
+   return(adval);                                  	         //Retorna el valor del ADC canal 0
 } 
+//*********************************************************************************************************
+// Funcion para enviar byte por puerto serie
+//*********************************************************************************************************
+void sendByte(unsigned char serialdata){
+   SBUF=serialdata;                                          //Carga el dato a enviar por uart
+   while(TI==0);                                             //Espera a la transmicion completa
+   TI=0;                                                     //Borra el flag de transmision
+}
 //*********************************************************************************************************
 // Funcion que realiza el parse de datos y armado del payload para enviar por UART
 //*********************************************************************************************************
-#define HEADER 200                                           //Definición de valor Header para el payload
-static char payload[5];                                      //Variable donde se aloja el payload
 void enivaRF(void){                                          //Declaración de función para enviar datos
    payload[0]=HEADER;                                        //Carga el Header en byte 0 del payload
    payload[4]=payload[1]+payload[2]+payload[3];              //Realiza suma de los tres datos y lo carga en el byte 4 del payload
-   putchar(payload[0]);                                      //Envía el byte 0 del payload por UART
+   sendByte(payload[0]);                                     //Envía el byte 0 del payload por UART
    delay_ms(50);                                             //Delay de espera entre bytes enviados por UART
-   putchar(payload[1]);                                      //Envía el byte 1 del payload por UART
+   sendByte(payload[1]);                                     //Envía el byte 1 del payload por UART
    delay_ms(50);                                             //Delay de espera entre bytes enviados por UART
-   putchar(payload[2]);                                      //Envía el byte 2 del payload por UART
+   sendByte(payload[2]);                                     //Envía el byte 2 del payload por UART
    delay_ms(50);                                             //Delay de espera entre bytes enviados por UART
-   putchar(payload[3]);                                      //Envía el byte 3 del payload por UART
+   sendByte(payload[3]);                                     //Envía el byte 3 del payload por UART
    delay_ms(50);                                             //Delay de espera entre bytes enviados por UART
-   putchar(payload[4]);                                      //Envía el byte 4 del payload por UART
+   sendByte(payload[4]);                                     //Envía el byte 4 del payload por UART
    delay_ms(50);                                             //Delay de espera entre bytes enviados por UART
    printf("\r");                                             //Envía caracter de retorno de linea como final de payload
 }
 //*********************************************************************************************************
-// Configuracion puerto serie a 9600 baud con cristal externo de 16MHz.
+// Programa principal, Realiza la lectura de DHT11, lectura de bateria y recibe los datos por UART
+// Lee la temperatura y humedad interna, realiza un pronóstico aproximado
 //*********************************************************************************************************
-void configuraUART(void){
-   SCON0  = 0x50;                                            //SCON0: mode 1, 8-bit UART, enable rcvr
-   TMOD  |= 0x20;                                            //TMOD:  timer 1, mode 2, 8-bit reload 
-   TH1    = 76;                                              //TH1:   reload value for 600 baud @ 16MHz 
-   TR1    = 1;                                               //TR1:   timer 1 run 
-   TI0    = 1;                                               //TI0:   set TI to send first char of UART 
-}
-//*********************************************************************************************************
-// Configuracion ADC pin P0.0
-//*********************************************************************************************************
-void configuraADC(void){
-   #define VREF 3                                            //Tensión de referencia interna
-   P0MDIN = 0xFE;                                            //Selecciona pin P0.0 como canal ADC 
-   P0SKIP = 0x01;                                            //Decodificacion Crossbar
-   ADC0CF = 0xF8;                                            //Habilita ADC 0
-   ADC0CN = 0x80;                                            //Habilita conversion en registro
-}
-//*********************************************************************************************************
-// Programa principal, Realiza la lectura de DHT11, lectura del LDR y Envia los datos por UART
-// Realiza el timer de Sleep y WakeUp
-//*********************************************************************************************************
-void main(){                                                 //Función principal
-	 configuraUART();				     //Función que configura UART
-	 configuraADC();				     //Función que configura ADC
-	 printf("CONFIGURADO\r"); 
-	 delay_ms(500); 
-   while(1){                                                 //Loop principal repetitivo
+void main(){                                                 //Funcion principal
+   serialInit();    
+   configuraADC();                                           //Función que configura ADC
+   while(1){                                                 //Loop principal infinito
       if(recibeDato()==0){                                   //Consulta si hay dato en la entrada del DHT11
          payload[1]=trama[2];                                //Carga el valor de temperatura DHT en byte 1 del payload
          payload[2]=trama[0];                                //Carga el valor de humedad DHT en byte 2 del payload
