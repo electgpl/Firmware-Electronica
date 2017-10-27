@@ -144,11 +144,11 @@ void leeDHT11(void){                                         //Funcion que lee e
 // Funcion que realiza la lectura del sensor LDR y acondiciona el valor
 //*********************************************************************************************************
 int lecturaLDR(void){                                        //Funcion que realiza la lectura del ADC para el LDR
-   unsigned int adval;					                             //Variable donde se guarda el valor del ADC
+   unsigned int adval;                                       //Variable donde se guarda el valor del ADC
    AD0BUSY=1;                                                //Inicia conversion de ADC
    while(AD0BUSY);                                           //Espera que finalice la conversion
-   adval=ADC0L;			                                         //Lee el ADC de 0 a 511
-   return(adval);                                  	         //Retorna el valor del ADC canal 0
+   adval=ADC0L;                                              //Lee el ADC de 0 a 511
+   return(adval);                                            //Retorna el valor del ADC canal 0
 } 
 //*********************************************************************************************************
 // Funcion para enviar byte por puerto serie
