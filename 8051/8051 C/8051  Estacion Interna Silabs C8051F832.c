@@ -6,136 +6,149 @@
 // Se muestra medicion interna y externa en un LCD de 2x16
 // Microcontrolador Silabs C8051F832
 //*********************************************************************************************************
-#include <REG51F800.H>                                       //Header de Silabs C8051F832
-#include <intrins.h>                                         //Biblioteca para funciones de assembler para el Delay
-#include <stdio.h>                                           //Biblioteca standar de entrada y salida
-//*********************************************************************************************************
-// Delay Bloqueante Micro Segundos
-//*********************************************************************************************************
-void delay_us(unsigned int us_count){                        //Funcion para delay de micro-segundos
-     int t=0;
-   while(us_count!=0){                                       //Mientras que el contador es distinto de cero
-      for(t=0;t<16;t++){                                     //16MIPS dividido en 16 para 1us
-         _nop_();                                            //Ejecuta funcion NOP de ensamblador
-      }
-      us_count--;                                            //Decremento del valor de delay
-   }
-}
-//*********************************************************************************************************
-// Delay Bloqueante Mili Segundos
-//*********************************************************************************************************
-void delay_ms(unsigned int us_count){                        //Funcion para delay de micro-segundos
-   while(us_count!=0){                                       //Mientras que el contador es distinto de cero
-      delay_us(1000);                                        //Ejecuta funcion delay micro segundos
-      us_count--;                                            //Decremento del valor de delay
-   }
-}
+#include <REG51F800.H>
+#include <reg52.h>
+#include <intrins.h>
+#include <stdio.h>
 //*********************************************************************************************************
 // Variables
 //*********************************************************************************************************
 #define HEADER 200                                           //Definicion de valor Header para el payload
-sbit DATA = P2^0;                                            //Pin del bus de un hilo para el DHT11
-sbit STATUS = P1^0;                                          //Pin para analizar el status de la interrupt
+sbit DATA = P1^0;                                            //Pin del bus de un hilo para el DHT11
 static int datoInt[2];                                       //Variable donde se alojan los datos internos
 static int payload[5];                                       //Variable donde se aloja el payload
 static int datoExt[3];                                       //Variable donde se alojan los datos externos
 //*********************************************************************************************************
 // Configuracion de pines del LCD
 //*********************************************************************************************************
-sbit LCD_RS = P0^0;									 //Register select
-sbit LCD_EN = P0^1;									 //Enable
-sbit LCD_D4 = P0^2;									 //Data bits
-sbit LCD_D5 = P0^3;									 //Data bits
-sbit LCD_D6 = P0^4;									 //Data bits
-sbit LCD_D7 = P0^6;									 //Data bits
+extern bit RS;                                                                   
+extern bit EN;                           
+extern bit D4;
+extern bit D5;
+extern bit D6;
+extern bit D7;
+sbit RS = P2^0;                                                                   
+sbit EN = P2^1;                            
+sbit D4 = P2^4;
+sbit D5 = P2^5;
+sbit D6 = P2^6;
+sbit D7 = P2^7;
 //*********************************************************************************************************
-// Funcion de escritura LCD
+// delay_us Bloqueante Micro Segundos
 //*********************************************************************************************************
-void lcd_write(unsigned char c){
-   if(c & 0x80) LCD_D7 = 1; else LCD_D7 = 0;
-   if(c & 0x40) LCD_D6 = 1; else LCD_D6 = 0;
-   if(c & 0x20) LCD_D5 = 1; else LCD_D5 = 0;
-   if(c & 0x10) LCD_D4 = 1; else LCD_D4 = 0;
-   LCD_EN = 1;
-   delay_us(1);
-   LCD_EN = 0;
-   delay_us(1);
-   if(c & 0x08) LCD_D7 = 1; else LCD_D7 = 0;
-   if(c & 0x04) LCD_D6 = 1; else LCD_D6 = 0;
-   if(c & 0x02) LCD_D5 = 1; else LCD_D5 = 0;
-   if(c & 0x01) LCD_D4 = 1; else LCD_D4 = 0;  
-   LCD_EN = 1;
-   delay_us(1);
-   LCD_EN = 0;
-   delay_us(40);
+void delay_us(unsigned int us_count){                        //Funcion para delay_ms de micro-segundos
+   int t=0;
+   while(us_count!=0){                                       //Mientras que el contador es distinto de cero
+      for(t=0;t<16;t++){                                     //16MIPS dividido en 16 para 1us
+         _nop_();                                            //Ejecuta funcion NOP de ensamblador
+      }
+      us_count--;                                            //Decremento del valor de delay_ms
+   }
 }
 //*********************************************************************************************************
-// Funcion que Limpia y enciende el LCD
+// delay_ms Bloqueante Mili Segundos
 //*********************************************************************************************************
-void lcd_clear(void){
-   LCD_RS = 0;                                               //Escribir bytes de control
-   lcd_write(0x01);
-   delay_ms(2);
+void delay_ms(unsigned int us_count){                        //Funcion para delay_ms de micro-segundos
+   while(us_count!=0){                                       //Mientras que el contador es distinto de cero
+      delay_us(1000);                                        //Ejecuta funcion delay_ms micro segundos
+      us_count--;                                            //Decremento del valor de delay_ms
+   }
 }
 //*********************************************************************************************************
-// Funcion que escribe un caracter en pantalla
+// Funcion que escribe en puerto
 //*********************************************************************************************************
-void lcd_putch(unsigned char c){
-   LCD_RS = 1;                                               //Escribir bytes de control
-   lcd_write(c);
-}
-//*********************************************************************************************************
-// Escribir una cadena de caracteres en la pantalla LCD
-//*********************************************************************************************************
-void lcd_puts(char *s){
-   LCD_RS = 1;                                               //Escribir bytes de control
-   while(*s) 
-      lcd_write(*s++);
-}
-//*********************************************************************************************************
-// Funcion para ir a la posicion especifica
-//*********************************************************************************************************
-void lcd_goto(unsigned char pos,unsigned char line){
-   LCD_RS = 0;                                               //Escribir bytes de control
-   if(line==0)
-      lcd_write(0x80 + pos);
-   else
-      lcd_write(0x80 + pos+ 0x40);
-}
-//*********************************************************************************************************
-// Funcion que Inicializar la pantalla LCD en modo de 4 bits
-//*********************************************************************************************************
-void lcd_init(void){                                      
-   LCD_RS = 0;                                               //Escribir bytes de control
-   delay_ms(15);                                             //Retraso de encendido
-   LCD_D4 = 1;                                               //Inicializacion segun datasheet    
-   LCD_D5 = 1;                                               //Inicializacion segun datasheet  
-   LCD_EN = 1;
-   delay_us(1);
-   LCD_EN = 0;
-   delay_us(1);                                              //Habilitacion / Deshabilitacion del LCD a demanda
-   delay_ms(5);                                              //Delay de configuracion de datasheet
-   LCD_EN = 1;
-   delay_us(1);
-   LCD_EN = 0;
-   delay_us(1);                                              //Habilitacion / Deshabilitacion del LCD a demanda   
-   delay_us(100);                                            //Delay de configuracion de datasheet
-   LCD_EN = 1;
-   delay_us(1);
-   LCD_EN = 0;
-   delay_us(1);                                              //Habilitacion / Deshabilitacion del LCD a demanda  
-   delay_ms(5);                                              //Delay de configuracion de datasheet
-   LCD_D4 = 0;                                               //Establecer el modo de 4 bits
-   LCD_EN = 1;
-   delay_us(1);
-   LCD_EN = 0;
-   delay_us(1);                                              //Habilitacion / Deshabilitacion del LCD a demanda 
-   delay_us(40);                                             //Delay de configuracion de datasheet
-   lcd_write(0x28);                                          //Modo de 4 bits, 1/16 de servicio, fuente 5x8, 2 líneas
-   lcd_write(0x0C);                                          //Enciende Display
-   lcd_write(0x06);                                          //Cursor de avance del modo de entrada
-   lcd_write(0x01);                                          //Borrar la visualizaci󮠹 restablecer el cursor
-}
+void lcdPort(char a){                                        //Funcion para escribir el puerto en 4bit
+    if(a&1) D4=1; 																			     //Evalua si a AND 0001, D4 a HIGH
+      else  D4=0;                                            //Caso contrario D4 a LOW
+    if(a&2) D5=1; 																			     //Evalua si a AND 0010, D5 a HIGH 
+      else  D5=0;                                            //Caso contrario D5 a LOW
+    if(a&4) D6=1; 																			     //Evalua si a AND 0100, D6 a HIGH 
+      else  D6=0;                                            //Caso contrario D6 a LOW
+    if(a&8) D7=1; 																			     //Evalua si a AND 1000, D7 a HIGH 
+      else  D7=0;                                            //Caso contrario D7 a LOW
+ }
+ //*********************************************************************************************************
+ // Funcion que envia comando
+ //*********************************************************************************************************
+ void lcdCmd(char a){                                        //Funcion para realizar comandos en LCD
+    RS=0;                                                    //Control RS a LOW
+    lcdPort(a);                                              //Llamado a lcdPort
+    EN=1;                                                    //Control EN a HIGH
+    delay_ms(5);                                             //Espera de 5ms
+    EN=0;                                                    //Control EN a LOW
+ }
+ //*********************************************************************************************************
+ // Borrado de LCD
+ //*********************************************************************************************************
+ lcdClear(){                                                 //Funcion para borrar el LCD
+    lcdCmd(0);                                               //Se envia comando LOW
+    lcdCmd(1);                                               //Se envia comando HIGH
+ }
+ //*********************************************************************************************************
+ // Funcion para ir a la posicion especifica
+ //*********************************************************************************************************
+ void lcdGotoxy(char b, char a){                             //Funcion para posicionar el cursor
+    char temp,z,y;                                           //Declaracion de variables
+    if(a==1){                                                //Si se encuentra en renglon 1
+      temp=0x80+b;                                           //Se incremena la columna
+       z=temp>>4;                                            //Se realiza el desplazamiento
+       y=temp&0x0F;                                          //Se aplica la mascara de bits
+       lcdCmd(z);                                            //Envia comandos
+       lcdCmd(y);                                            //Envia comandos
+    }else{                                                   //Si no esta en renglon 1
+       if(a==2){                                             //Si se encuentra en renglon 2
+          temp=0xC0+b;                                       //Se incrementa la columna
+          z=temp>>4;                                         //Se realiza el desplazamiento
+          y=temp&0x0F;                                       //Se realiza la mascara
+          lcdCmd(z);                                         //Envia comandos
+          lcdCmd(y);                                         //Envia comandos
+       }
+    }		
+ }
+ //*********************************************************************************************************
+ // Inicializa LCD
+ //*********************************************************************************************************
+ void lcdInit(){                                             //Funcion para inicializar el LCD
+    lcdPort(0x00);                                           //Se envia 0000 0000
+    delay_ms(200);                                           //Delay de 200ms
+    lcdCmd(0x03);                                            //Se envia 0000 0011
+    delay_ms(50);                                            //Delay de 50ms
+    lcdCmd(0x03);                                            //Se envia 0000 0011
+    delay_ms(110);                                           //Delay de 110ms
+    lcdCmd(0x03);                                            //Se envia 0000 0011
+    lcdCmd(0x02);                                            //Se envia 0000 0010
+    lcdCmd(0x02);                                            //Se envia 0000 0010
+    lcdCmd(0x08);                                            //Se envia 0000 1000
+    lcdCmd(0x00);                                            //Se envia 0000 0000 
+    lcdCmd(0x0C);                                            //Se envia 0000 1100
+    lcdCmd(0x00);                                            //Se envia 0000 0000
+    lcdCmd(0x06);                                            //Se envia 0000 0110
+ }
+ //*********************************************************************************************************
+ // Funcion para escribir caracter
+ //*********************************************************************************************************
+ void lcdWriteChar(char a){                                  //Funcion para escribir un caracter
+    char temp,y;                                             //Declaracion de variables
+    temp=a&0x0F;                                             //Se realiza la mascara de bits 0000 1111
+    y=a&0xF0;                                                //Se realiza la mascara de bits 0000 1111
+    RS=1;                                                    //Control RS a HIGH
+    lcdPort(y>>4);                                           //Se desplaza 4 lugares a la derecha
+    EN=1;                                                    //Control EN a HIGH
+    delay_ms(5);                                             //Delay de 5ms
+    EN=0;                                                    //Control EN a LOW
+    lcdPort(temp);                                           //Se envia el valor
+    EN=1;                                                    //Control EN a HIGH
+    delay_ms(5);                                             //Delay de 5ms
+    EN=0;                                                    //Control EN a LOW
+ }
+ //*********************************************************************************************************
+ // Funcion para escribir string
+ //*********************************************************************************************************
+ void lcdWriteString(char *a){                               //Funcion para escribir string
+    int i;                                                   //Declaracion de variables
+    for(i=0;a[i]!='\0';i++)                                  //Iteracion de caracteres hasta el NULL
+       lcdWriteChar(a[i]);                                   //Se carga cada caracter para formar string
+ }
 //*********************************************************************************************************
 // Funcion ITOA para convertir entero en ascii
 //*********************************************************************************************************
@@ -160,24 +173,36 @@ char *itoa(long int num, char *s){                           //Funcion ITOA (Ent
    return s;                                                 //Retorno del valor ASCII
 }
 //*********************************************************************************************************
-// Funcion Interrupcion UART que realiza el parse de datos, validacion de Header y Checksum
-// Si validacion y Checksum son validos, carga el vector DATO para ser utilizado
+// Funcion para inicializar el puerto serie 9600 @ 11.059MHz
 //*********************************************************************************************************
-int i=0;                                                     //Variable para el contador de bytes de entrada
-void UART0_ISR(){                                            //Funcion de servicio de interrupcion
-   payload[i++]=SBUF0;                                       //Guarda byte de entrada en payload. incrementa indice
-   if(i>5){                                                  //Si el indice es mayor que 5 se asume que se completa el payload
-      if(payload[0]==HEADER){                                //Validacion que el Header sea 200 (seteado en el transmisor)
-         if(payload[1]+payload[2]+payload[3]-payload[4]==0){ //Validacion de checksum, si datos leidos son igual a checksum
-            datoExt[0]=payload[1];                           //Cargamos los datos en el vector
-            datoExt[1]=payload[2];                           //Cargamos los datos en el vector
-            datoExt[2]=payload[3];                           //Cargamos los datos en el vector
-            STATUS ^= 1;                                     //Status de dato recibido OK
-         }
-      }
-      i=0;                                                   //Una vez que se completan los 5 bytes, se reinicia el contador
-   }
-}
+void serialInit(void){                   	                   //Funcion para configurar UART
+    TMOD = 0x20;                           			             //Timer 1 en modo 2 - Auto recarga para generar Baudrate
+    SCON = 0x50;                           			             //Serial modo 1, 8bit de dato, 1bit de start, 1bit de stop
+    TH1 = 0xFD;                                              //Carga el baudrate en el timer a 9600bps
+    TR1 = 1;                               			             //Dispara el timer
+ }
+ //*********************************************************************************************************
+ // Función Interrupción UART que realiza el parse de datos, validación de Header y Checksum
+ // Si validación y Checksum son validos, carga el vector DATO para ser utilizado
+ //*********************************************************************************************************
+ char i=0;                                                   //Variable para el contador de bytes de entrada
+ void serial_ISR(void) interrupt 4{                          //Función de servicio de interrupción
+      if(RI==1){                                             //Si hay dato pendiente en UART
+       payload[i++]=SBUF;                                    //Guarda byte de entrada en payload. incrementa indice
+       RI=0;                                                 //Pone a cero el flag
+    }                                      
+    if(i>5){                                                 //Si el indice es mayor que 5 se asume que se completa el payload
+       if(payload[0]==HEADER){                               //Validación que el Header sea 200 (seteado en el transmisor)
+          if(payload[1]+payload[2]+payload[3]-payload[4]==0){//Validación de checksum, si datos leídos son igual a checksum
+             datoExt[0]=payload[1];                          //Cargamos los datos en el vector
+             datoExt[1]=payload[2];                          //Cargamos los datos en el vector
+             datoExt[2]=payload[3];                          //Cargamos los datos en el vector
+          }
+       }
+       i=0;                                                  //Una vez que se completan los 5 bytes, se reinicia el contador
+    }	 
+    RI=0;                                                    //Pone a cero el flag 
+ }
 //*********************************************************************************************************
 // Trama DHT11 - Segun Datasheet
 // ____             ____      ____                                       ___
@@ -192,7 +217,7 @@ void UART0_ISR(){                                            //Funcion de servic
 //     |________|                         |...       1 bit
 //      <-50us-> <---------70us---------->
 //*********************************************************************************************************
-unsigned int trama[5];                                         //Vector donde se alojan los datos
+unsigned int trama[5];                                       //Vector donde se alojan los datos
 //*********************************************************************************************************
 // Funcion de recepcio de Byte
 // Lee el valor leido en la trama y lo separa realizando shift
@@ -257,72 +282,64 @@ void leeDHT11(void){                                         //Funcion que lee e
 // Saludo de Pantalla
 //*********************************************************************************************************
 void saludoPantalla(void){                                   //Funcion que realiza un saludo inicial
-   lcd_goto(1,1);                                            //Posiciona el cursor en la pantalla
-   lcd_putch(" Est.Inalambrica");                            //Imprime mensaje renglon 1
-   lcd_goto(1,2);                                            //Posiciona el cursor en la pantalla
-   lcd_putch(" v1.1  UTN INSPT");                            //Imprime mensaje renglon 2
-   delay_ms(2000);                                           //Delay de saludo
-   lcd_init();                                               //Inicializa LCD
-   lcd_clear();                                              //Borra LCD 
+   lcdGotoxy(1,1);                                           //Posiciona el cursor en la pantalla
+   lcdWriteString(" Est.Inalambrica");                       //Imprime mensaje renglon 1
+   lcdGotoxy(1,2);                                           //Posiciona el cursor en la pantalla
+   lcdWriteString(" v1.1  UTN INSPT");                       //Imprime mensaje renglon 2
+   delay_ms(2000);                                           //delay_ms de saludo
+   lcdInit();                                                //Inicializa LCD
+   lcdClear();                                               //Borra LCD 
 }
 //*********************************************************************************************************
 // Impresion de Pantalla
 //*********************************************************************************************************
 void impPantalla(void){                                      //Funcion que imprime pantalla
    char string[4];                                           //Declaración de vector para mostrar en LCD
-   lcd_goto(1,2);                                            //Posiciona el cursor en la pantalla
+   lcdGotoxy(1,2);                                           //Posiciona el cursor en la pantalla
    itoa(datoExt[0],string);                                  //Funcion que convierte entero en ascii
-   lcd_puts(string);                                         //Muestra en el LCD
-   lcd_goto(3,2);                                            //Posiciona el cursor en la pantalla
-   lcd_putch(0xDF);                                          //Imprime unidad de medida
-   lcd_goto(4,2);                                            //Posiciona el cursor en la pantalla
-   lcd_putch("C");                                           //Imprime unidad de medida
-   lcd_goto(6,2);                                            //Posiciona el cursor en la pantalla
+   lcdWriteString(string);                                   //Muestra en el LCD
+   lcdGotoxy(3,2);                                           //Posiciona el cursor en la pantalla
+   lcdWriteString(0xDF);                                     //Imprime unidad de medida
+   lcdGotoxy(4,2);                                           //Posiciona el cursor en la pantalla
+   lcdWriteString("C");                                      //Imprime unidad de medida
+   lcdGotoxy(6,2);                                           //Posiciona el cursor en la pantalla
    itoa(datoExt[1],string);                                  //Funcion que convierte entero en ascii
-   lcd_puts(string);                                         //Muestra en el LCD
-   lcd_goto(8,2);                                            //Posiciona el cursor en la pantalla
-   lcd_putch("%RH");                                         //Imprime unidad de medida
-   lcd_goto(12,2);                                           //Posiciona el cursor en la pantalla
+   lcdWriteString(string);                                   //Muestra en el LCD
+   lcdGotoxy(8,2);                                           //Posiciona el cursor en la pantalla
+   lcdWriteString("%RH");                                    //Imprime unidad de medida
+   lcdGotoxy(12,2);                                          //Posiciona el cursor en la pantalla
    itoa(datoExt[2],string);                                  //Funcion que convierte entero en ascii
-   lcd_puts(string);                                         //Muestra en el LCD
-   lcd_goto(15,2);                                           //Posiciona el cursor en la pantalla
-   lcd_putch("L");                                           //Imprime unidad de medida
-   lcd_goto(3,1);                                            //Posiciona el cursor en la pantalla
+   lcdWriteString(string);                                   //Muestra en el LCD
+   lcdGotoxy(15,2);                                          //Posiciona el cursor en la pantalla
+   lcdWriteString("L");                                      //Imprime unidad de medida
+   lcdGotoxy(3,1);                                           //Posiciona el cursor en la pantalla
    itoa(datoInt[0],string);                                  //Funcion que convierte entero en ascii
-   lcd_puts(string);                                         //Muestra en el LCD
-   lcd_goto(5,1);                                            //Posiciona el cursor en la pantalla
-   lcd_putch(0xDF);                                          //Imprime unidad de medida
-   lcd_goto(6,1);                                            //Posiciona el cursor en la pantalla
-   lcd_putch("C");                                           //Imprime unidad de medida
-   lcd_goto(10,1);                                           //Posiciona el cursor en la pantalla
+   lcdWriteString(string);                                   //Muestra en el LCD
+   lcdGotoxy(5,1);                                           //Posiciona el cursor en la pantalla
+   lcdWriteString(0xDF);                                     //Imprime unidad de medida
+   lcdGotoxy(6,1);                                           //Posiciona el cursor en la pantalla
+   lcdWriteString("C");                                      //Imprime unidad de medida
+   lcdGotoxy(10,1);                                          //Posiciona el cursor en la pantalla
    itoa(datoInt[1],string);                                  //Funcion que convierte entero en ascii
-   lcd_puts(string);                                         //Muestra en el LCD
-   lcd_goto(12,1);                                           //Posiciona el cursor en la pantalla
-   lcd_putch("%RH");                                         //Imprime unidad de medida
-}
-//*********************************************************************************************************
-// Configuracion puerto serie a 9600 baud con cristal externo de 16MHz.
-//*********************************************************************************************************
-void configuraUART(void){
-   SCON0  = 0x50;                                            //SCON0: mode 1, 8-bit UART, enable rcvr
-   TMOD  |= 0x20;                                            //TMOD:  timer 1, mode 2, 8-bit reload
-   TH1    = 76;                                              //TH1:   reload value for 600 baud @ 16MHz
-   TR1    = 1;                                               //TR1:   timer 1 run
-   TI0    = 1;                                               //TI0:   set TI to send first char of UART
+   lcdWriteString(string);                                   //Muestra en el LCD
+   lcdGotoxy(12,1);                                          //Posiciona el cursor en la pantalla
+   lcdWriteString("%RH");                                    //Imprime unidad de medida
 }
 //*********************************************************************************************************
 // Programa principal, Realiza la lectura de DHT11, lectura de bateria y recibe los datos por UART
 // Lee la temperatura y humedad interna, realiza un pronóstico aproximado
 //*********************************************************************************************************
 void main(){                                                 //Funcion principal
-   configuraUART();                                          //Funcion que configura UART
-   lcd_init();                                               //Inicializa LCD
-   lcd_clear();                                              //Borra LCD 
-   saludoPantalla();                                         //Funcion de saludo de pantalla
+   saludoPantalla();                                         //Función de saludo de pantalla
+   P1=0x00; 																	               //Usado para aplicacion
+   P3=0x03; 																	               //Usado para el serie
+   serialInit();    
+   EA=1;
+   ES=1;
    while(1){                                                 //Loop principal infinito
       leeDHT11();                                            //Funcion que lee DHT11
-      delay_ms(2000);                                        //Delay de Actualizacion
+      delay_ms(2000);                                        //delay_ms de Actualizacion
       impPantalla();                                         //Imprime pantalla LCD
-      delay_ms(2000);                                        //Delay de Actualizacion
+      delay_ms(2000);                                        //delay_ms de Actualizacion
    }
 }
