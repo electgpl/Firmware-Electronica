@@ -331,8 +331,8 @@ void impPantalla(void){                                      //Funcion que impri
 //*********************************************************************************************************
 void main(){                                                 //Funcion principal
    saludoPantalla();                                         //Función de saludo de pantalla
-   P1=0x00; 																 //Usado para aplicacion
-   P3=0x03; 															    //Usado para el serie
+   P1=0x00;                                                  //Usado para aplicacion
+   P3=0x03;                                                  //Usado para el serie
    serialInit();                                             //Inicializa puerto serie
    EA=1;                                                     //Habilitacion de interrupcion Global
    ES=1;                                                     //Habilitacion de interrupcion Serie
