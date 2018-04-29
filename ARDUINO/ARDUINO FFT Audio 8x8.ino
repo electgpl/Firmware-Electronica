@@ -1,3 +1,15 @@
+/*
+   Programa Analizador de Espectro de Audio
+   Implementación de biblioteca "arduinoFFT" para el control FFT
+   Implementación de matriz de Leds 8x8 con MAX7219
+   Pines de conexión:
+      CLK pin 11
+      CS  pin 10
+      DIN pin 12
+      ADC pin A0
+   Autor: Electgpl
+*/
+
 #include "LedControl.h"
 #include "arduinoFFT.h"
 
