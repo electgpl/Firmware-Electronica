@@ -1,8 +1,8 @@
-int secuencia[NIVEL_MAX];
-int secuenciaUsuario[NIVEL_MAX];
 int nivelActual = 1;
 int velocidad = 1000;
 const int NIVEL_MAX = 100;
+int secuencia[NIVEL_MAX];
+int secuenciaUsuario[NIVEL_MAX];
 
 void setup(){
    pinMode(A0, INPUT);
