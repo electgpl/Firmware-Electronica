@@ -6,7 +6,7 @@
 #include <Wire.h>
 #include <Adafruit_BMP085.h>
 
-String apiKey = "EHW19OYPTK9J7F40";
+String apiKey = "APIKEY DE SU CUENTA THINGSPEAK";
 const char* server = "api.thingspeak.com";
 int pinDHT11 = D0;
 int timeOut = 0;
@@ -20,10 +20,10 @@ void setup(){
    wifiManager.resetSettings(); //Poner en un boton de reset en loop por tiempo
    delay(10);
    pinMode(A0, INPUT);
-   wifiManager.autoConnect("AutoConnectAP");
-   Serial.println("connected...yeey :)");
+   wifiManager.autoConnect("WS_Electgpl");
+   Serial.println("CONECTADO!");
    if(!bmp.begin()){
-      Serial.println("Could not find a valid BMP085 sensor, check wiring!");
+      Serial.println("No encuentra sensor BMP085!");
       while(1){}
    }
 }
@@ -33,7 +33,7 @@ void loop(){
    byte humedad = 0;
    float luminosidad = analogRead(A0);
    if(dht11.read(pinDHT11, &temperatura, &humedad, NULL)){
-      Serial.print("Read DHT11 failed.");
+      Serial.print("No encuentra sensor DHT11!");
       return;
    }
    if(timeOut==30){
@@ -60,13 +60,13 @@ void loop(){
          Serial.println("% send to Thingspeak");
       }
       client.stop();
-      Serial.print("luminosidad: ");
+      Serial.print("Luminosidad: ");
       Serial.print(luminosidad);
-      Serial.print(" | temperatura: ");
+      Serial.print(" | Temperatura: ");
       Serial.print(bmp.readTemperature());
-      Serial.print(" | humedad: ");
+      Serial.print(" | Humedad: ");
       Serial.print(humedad);
-      Serial.print(" | presion: ");
+      Serial.print(" | Presion: ");
       Serial.println(bmp.readPressure()/1000);
       timeOut=0; 
    }
