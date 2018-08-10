@@ -46,7 +46,7 @@ void loop(){
          postStr +="&field3=";
          postStr += String((int)humedad);
          postStr +="&field4=";
-         postStr += String(bmp.readPressure()/1000);
+         postStr += String(bmp.readPressure()/100);
          postStr += "\r\n\r\n";
          client.print("POST /update HTTP/1.1\n");
          client.print("Host: api.thingspeak.com\n");
