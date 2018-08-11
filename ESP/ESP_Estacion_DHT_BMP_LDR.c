@@ -17,13 +17,12 @@ Adafruit_BMP085 bmp;
 void setup(){
    WiFiManager wifiManager;
    Serial.begin(115200);
-   wifiManager.resetSettings(); //Poner en un boton de reset en loop por tiempo
    delay(10);
-   pinMode(A0, INPUT);
-   wifiManager.autoConnect("WS_Electgpl");
-   Serial.println("CONECTADO!");
+   wifiManager.resetSettings();
+   wifiManager.autoConnect("WS-Electgpl");
+   Serial.println("Estacion Conectada a Internet");
    if(!bmp.begin()){
-      Serial.println("No encuentra sensor BMP085!");
+      Serial.println("Error en BMP085");
       while(1){}
    }
 }
@@ -33,7 +32,7 @@ void loop(){
    byte humedad = 0;
    float luminosidad = analogRead(A0);
    if(dht11.read(pinDHT11, &temperatura, &humedad, NULL)){
-      Serial.print("No encuentra sensor DHT11!");
+      Serial.print("Error en DHT11");
       return;
    }
    if(timeOut==30){
@@ -42,11 +41,11 @@ void loop(){
          postStr +="&field1=";
          postStr += String(luminosidad);
          postStr +="&field2=";
-         postStr += String(bmp.readTemperature());
+         postStr += String((float)bmp.readTemperature());
          postStr +="&field3=";
          postStr += String((int)humedad);
          postStr +="&field4=";
-         postStr += String(bmp.readPressure()/100);
+         postStr += String((float)bmp.readPressure()/100);
          postStr += "\r\n\r\n";
          client.print("POST /update HTTP/1.1\n");
          client.print("Host: api.thingspeak.com\n");
@@ -60,14 +59,14 @@ void loop(){
          Serial.println("% send to Thingspeak");
       }
       client.stop();
-      Serial.print("Luminosidad: ");
+      Serial.print("luminosidad: ");
       Serial.print(luminosidad);
-      Serial.print(" | Temperatura: ");
-      Serial.print(bmp.readTemperature());
-      Serial.print(" | Humedad: ");
+      Serial.print(" | temperatura: ");
+      Serial.print((float)bmp.readTemperature());
+      Serial.print(" | humedad: ");
       Serial.print(humedad);
-      Serial.print(" | Presion: ");
-      Serial.println(bmp.readPressure()/1000);
+      Serial.print(" | presion: ");
+      Serial.println((float)bmp.readPressure()/100);
       timeOut=0; 
    }
    delay(1000);
