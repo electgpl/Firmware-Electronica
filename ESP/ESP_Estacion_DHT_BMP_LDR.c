@@ -35,7 +35,7 @@ void loop(){
       Serial.print("Error en DHT11");
       return;
    }
-   if(timeOut==30){
+   if(timeOut==300){
       if(client.connect(server,80)){
          String postStr = apiKey;
          postStr +="&field1=";
