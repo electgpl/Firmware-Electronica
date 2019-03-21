@@ -7,8 +7,8 @@
 #include <Adafruit_BMP085.h>
 #include "ThingSpeak.h"          //https://github.com/mathworks/thingspeak-arduino
 
-unsigned long myChannelNumber = 128756;
-const char * myWriteAPIKey = "EHW19OYPTK9J7F40";
+unsigned long myChannelNumber = NUMERO DEL CANAL;
+const char * myWriteAPIKey = "APIKEY DEL CANAL";
 
 int pinDHT11 = D0;
 int pinFACTORY = D6;
