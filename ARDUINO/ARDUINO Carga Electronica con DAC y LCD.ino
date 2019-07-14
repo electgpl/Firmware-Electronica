@@ -145,11 +145,11 @@ void setup(){
 }
 
 void loop(){
-   if(millis() > TiempoAhora1 + periodo1){
+   if(millis() - TiempoAhora1 > periodo1){
       TiempoAhora1 = millis();
       update();
    }
-   if(millis() > TiempoAhora2 + periodo2){
+   if(millis() - TiempoAhora2 > periodo2){
       TiempoAhora2 = millis();
       serialDebug();
       lcdValue();
