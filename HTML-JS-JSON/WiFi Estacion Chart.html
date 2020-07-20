@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<script src="https://www.gstatic.com/charts/loader.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+var jsonData;
+function myCallback(dataWeGotViaJsonp){
+   jsonData = dataWeGotViaJsonp['feeds'];
+};
+</script>
+<script src="https://api.thingspeak.com/channels/128756/feeds.json?api_key=PW0...17J6&amp;results=1000&amp;callback=myCallback" type="text/javascript">
+</script>
+<script type="text/javascript">
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(drawChart);
+function drawChart(){
+   var data = new google.visualization.DataTable();
+   data.addColumn('datetime','Time');
+   data.addColumn('number','Temperatura');
+   data.addColumn('number','Humedad');
+   data.addColumn('number','Luminosidad');
+   data.addColumn('number','Presion');
+   for(var i = 0; i < jsonData.length; i++){
+      var timestamp = jsonData[i]['created_at'];
+      var Temperatura = jsonData[i]['field2'];
+      var Humedad = jsonData[i]['field3'];
+      var Luminosidad = jsonData[i]['field1'];
+      var Presion = jsonData[i]['field4'];
+      data.addRow([new Date(timestamp), parseFloat(Temperatura), parseFloat(Humedad), parseFloat(Luminosidad), parseFloat(Presion)]);
+   };
+   var options ={
+      title: 'Humedad, Temperatura, Presion y Luminosidad', legend: { position: 'bottom' },
+      curveType: 'function', colors: ['blue', 'red', 'green', 'yellow'],
+      series: {0: {targetAxisIndex: 0}, 1: {targetAxisIndex: 1}, 2: {targetAxisIndex: 2}, 3: {targetAxisIndex: 3}},
+      vAxes: {0: {title: ''}, 1: {title: ''}, 2: {title: ''}, 3: {title: ''}}
+   };
+   var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+   chart.draw(data, options);
+}
+</script>
+</head>
+<body>
+<br>
+<div id="curve_chart" style="height: 300px; width: 700px;">
+</div>
+<br>
+</body>
+</html>
