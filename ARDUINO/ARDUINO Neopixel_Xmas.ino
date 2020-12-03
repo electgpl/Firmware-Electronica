@@ -34,7 +34,7 @@ void loop(){
    theaterChase(strip.Color(127, 127, 127), 50);
    theaterChase(strip.Color(127,   0,   0), 50);
    theaterChase(strip.Color(  0,   0, 127), 50);
-   rainbow(50);
+   rainbow(20);
    flashRandom(10, 50);
    flashRandom(6, 100);
    flashRandom(2, 200);
@@ -206,6 +206,36 @@ void colorXmas(uint8_t wait){
    strip.setPixelColor(17, strip.Color(0, 64, 0)); strip.show(); delay(wait);
    strip.setPixelColor(18, strip.Color(64, 0, 0)); strip.show(); delay(wait);
    strip.setPixelColor(19, strip.Color(0, 64, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(20, strip.Color(64, 0, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(21, strip.Color(0, 64, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(22, strip.Color(64, 0, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(23, strip.Color(0, 64, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(24, strip.Color(64, 0, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(25, strip.Color(0, 64, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(26, strip.Color(64, 0, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(27, strip.Color(0, 64, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(28, strip.Color(64, 0, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(29, strip.Color(0, 64, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(30, strip.Color(64, 0, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(31, strip.Color(0, 64, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(32, strip.Color(64, 0, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(33, strip.Color(0, 64, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(34, strip.Color(64, 0, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(35, strip.Color(0, 64, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(36, strip.Color(64, 0, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(37, strip.Color(0, 64, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(38, strip.Color(64, 0, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(39, strip.Color(0, 64, 0)); strip.show(); delay(wait);   
+   strip.setPixelColor(40, strip.Color(64, 0, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(41, strip.Color(0, 64, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(42, strip.Color(64, 0, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(43, strip.Color(0, 64, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(44, strip.Color(64, 0, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(45, strip.Color(0, 64, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(46, strip.Color(64, 0, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(47, strip.Color(0, 64, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(48, strip.Color(64, 0, 0)); strip.show(); delay(wait);
+   strip.setPixelColor(49, strip.Color(0, 64, 0)); strip.show(); delay(wait); 
 }
  
 void colorWipe(uint32_t c, uint8_t wait){
