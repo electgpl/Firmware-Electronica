@@ -24,7 +24,7 @@ void loop(){
    colorWipe(strip.Color(128, 0, 0), 50);
    colorWipe(strip.Color(0, 128, 0), 50);
    colorWipe(strip.Color(0, 0, 128), 50);
-   colorXmas(100);
+   colorXmas(25);
    flashRandom(2, 200);
    Strobe(128, 128, 128, 10, 30, 100);
    Strobe(128, 128, 128, 10, 30, 100);
@@ -46,22 +46,21 @@ void loop(){
    Strobe(0, 128, 0, 20, 30, 100);
    Strobe(128, 0, 0, 20, 30, 100);
    theaterChaseRainbow(50);
-   theaterChaseRainbow(50);
-   colorXmas(200);
+   colorXmas(50);
    colorWave(5);
-   colorXmas(100);
+   colorXmas(50);
    Strobe(128, 0, 0, 20, 30, 100);
    Strobe(0, 128, 0, 20, 30, 100);
    rainbow(15);
-   colorXmas(100);
+   colorXmas(50);
    rainbowCycle(10);
-   colorXmas(200);
+   colorXmas(50);
    Strobe(128, 128, 128, 10, 30, 100);
-   colorXmas(100);
+   colorXmas(50);
    flashRandom(3, 100);
    Strobe(128, 128, 128, 10, 30, 100);
    colorXmas(50);
-   colorWave(30);                               
+   colorWave(20);                               
 }
 
 void flashRandom(int wait, uint8_t howmany){
@@ -123,20 +122,6 @@ void whiteOverRainbow(int whiteSpeed, int whiteLength){
       }
    }
 }
-
-/*
-void pulseWhite(uint8_t wait){
-   for(int j=0; j<256; j++){
-      strip.fill(strip.Color(0, 0, 0, strip.gamma8(j)));
-      strip.show();
-      delay(wait);
-   }
-   for(int j=255; j>=0; j--){
-      strip.fill(strip.Color(0, 0, 0, strip.gamma8(j)));
-      strip.show();
-      delay(wait);
-   }
-}*/
 
 void rainbowFade2White(int wait, int rainbowLoops, int whiteLoops){
    int fadeVal=0, fadeMax=100;
