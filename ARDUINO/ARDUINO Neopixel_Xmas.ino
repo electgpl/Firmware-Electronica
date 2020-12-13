@@ -1,7 +1,12 @@
+// Configurar Pin de salida (por defecto 2)
+// Configurar Cantidad de LEDs (por defecto 50)
+// Configurar Brillo global de los leds (por defecto 50)
+// Dentro del loop todas las funciones de los leds, se pueden modificar, cambiar de lugar en la secuencia, eliminar.
+
 #include <Adafruit_NeoPixel.h>
 
-#define PIN 2
-#define STRIPSIZE 50
+#define PIN 2                                    //Pin de salida para los leds
+#define STRIPSIZE 50                             //Cantidad de leds
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRIPSIZE, PIN, NEO_GRB + NEO_KHZ800);
 
 uint8_t myColors[][3] = {{232, 100, 255},
@@ -17,50 +22,49 @@ uint8_t myColors[][3] = {{232, 100, 255},
 
 void setup(){
    strip.begin();
-   strip.setBrightness(50);
+   strip.setBrightness(50);                      //Brillo de los leds
 }
 
-void loop(){ 
-   colorWipe(strip.Color(128, 0, 0), 50);
-   colorWipe(strip.Color(0, 128, 0), 50);
-   colorWipe(strip.Color(0, 0, 128), 50);
-   colorXmas(25);
-   flashRandom(2, 200);
-   Strobe(128, 128, 128, 10, 30, 100);
-   Strobe(128, 128, 128, 10, 30, 100);
-   Strobe(128, 128, 128, 10, 30, 100);
-   theaterChaseRainbow(50);
-   whiteOverRainbow(75, 5);
-   theaterChase(strip.Color(127, 127, 127), 50);
-   theaterChase(strip.Color(127,   0,   0), 50);
-   theaterChase(strip.Color(  0,   0, 127), 50);
-   rainbow(20);
-   flashRandom(10, 50);
-   flashRandom(6, 100);
-   flashRandom(2, 200);
-   colorWipe(strip.Color(128, 0, 0), 40);
-   colorWipe(strip.Color(0, 128, 0), 40);   
-   theaterChaseRainbow(50);
-   whiteOverRainbow(75, 5);
-   rainbowFade2White(3, 3, 1);
-   Strobe(0, 128, 0, 20, 30, 100);
-   Strobe(128, 0, 0, 20, 30, 100);
-   theaterChaseRainbow(50);
-   colorXmas(50);
-   colorWave(5);
-   colorXmas(50);
-   Strobe(128, 0, 0, 20, 30, 100);
-   Strobe(0, 128, 0, 20, 30, 100);
-   rainbow(15);
-   colorXmas(50);
-   rainbowCycle(10);
-   colorXmas(50);
-   Strobe(128, 128, 128, 10, 30, 100);
-   colorXmas(50);
-   flashRandom(3, 100);
-   Strobe(128, 128, 128, 10, 30, 100);
-   colorXmas(50);
-   colorWave(20);                               
+void loop(){                                     //Aqui sucede la magia de navidad
+   colorWipe(strip.Color(128, 0, 0), 50);        //Barrido de color ROJO
+   colorWipe(strip.Color(0, 128, 0), 50);        //Barrido de color VERDE
+   colorWipe(strip.Color(0, 0, 128), 50);        //Barrido de color AZUL
+   colorXmas(25);                                //Barrido de color VERDE y ROJO
+   flashRandom(2, 200);                          //Flash en pixel individual color random
+   Strobe(128, 128, 128, 10, 30, 100);           //Estroboscopio en todos los leds color BLANCO
+   Strobe(128, 128, 128, 10, 30, 100);           //Estroboscopio en todos los leds color BLANCO
+   Strobe(128, 128, 128, 10, 30, 100);           //Estroboscopio en todos los leds color BLANCO
+   theaterChaseRainbow(50);                      //Spin de barrido de colores
+   theaterChase(strip.Color(127, 127, 127), 50); //Spin de barrido Blanco
+   theaterChase(strip.Color(127,   0,   0), 50); //Spin de barrido Rojo
+   theaterChase(strip.Color(  0,   0, 127), 50); //Spin de barrido Azul
+   rainbow(20);                                  //Fundido de colores
+   flashRandom(10, 50);                          //Flash en pixel individual color random
+   flashRandom(6, 100);                          //Flash en pixel individual color random
+   flashRandom(2, 200);                          //Flash en pixel individual color random
+   colorWipe(strip.Color(128, 0, 0), 40);        //Barrido de color ROJO
+   colorWipe(strip.Color(0, 128, 0), 40);        //Barrido de color VERDE   
+   theaterChaseRainbow(50);                      //Spin de barrido de colores
+   rainbowFade2White(3, 3, 1);                   //Spin con Fade de colores y Stop
+   Strobe(0, 128, 0, 20, 30, 100);               //Estroboscopio en todos los leds color Verde
+   Strobe(128, 0, 0, 20, 30, 100);               //Estroboscopio en todos los leds color Rojo
+   theaterChaseRainbow(50);                      //Spin de barrido de colores
+   colorXmas(50);                                //Barrido de color VERDE y ROJO
+   colorWave(5);                                 //Onda de colores RGB Potente
+   colorXmas(50);                                //Barrido de color VERDE y ROJO
+   Strobe(128, 0, 0, 20, 30, 100);               //Estroboscopio en todos los leds color Rojo
+   Strobe(0, 128, 0, 20, 30, 100);               //Estroboscopio en todos los leds color Verde
+   rainbow(15);                                  //Fundido de colores
+   colorXmas(50);                                //Barrido de color VERDE y ROJO
+   rainbowCycle(10);                             //Spin de color RGB Lento
+   colorXmas(50);                                //Barrido de color VERDE y ROJO
+   Strobe(128, 128, 128, 10, 30, 100);           //Estroboscopio en todos los leds color BLANCO
+   colorXmas(50);                                //Barrido de color VERDE y ROJO
+   flashRandom(3, 100);                          //Flash en pixel individual color random
+   Strobe(128, 128, 128, 10, 30, 100);           //Estroboscopio en todos los leds color BLANCO
+   colorXmas(50);                                //Barrido de color VERDE y ROJO
+   colorWave(20);                                //Onda de colores RGB  
+   rainbowFade2White(3, 3, 1);                   //Spin con Fade de colores y Stop   
 }
 
 void flashRandom(int wait, uint8_t howmany){
@@ -85,40 +89,6 @@ void flashRandom(int wait, uint8_t howmany){
          strip.setPixelColor(j, strip.Color(r, g, b));
          strip.show();
          delay(wait);
-      }
-   }
-}
-
-void whiteOverRainbow(int whiteSpeed, int whiteLength){
-   if(whiteLength >= strip.numPixels()) 
-      whiteLength = strip.numPixels() - 1;
-   int      head          = whiteLength - 1;
-   int      tail          = 0;
-   int      loops         = 3;
-   int      loopNum       = 0;
-   uint32_t lastTime      = millis();
-   uint32_t firstPixelHue = 0;
-   for(;;){
-      for(int i=0; i<strip.numPixels(); i++){
-         if(((i >= tail) && (i <= head)) || ((tail > head) && ((i >= tail) || (i <= head)))){
-            strip.setPixelColor(i, strip.Color(0, 0, 0, 255));
-         }else{
-            int pixelHue = firstPixelHue + (i * 65536L / strip.numPixels());
-            strip.setPixelColor(i, strip.gamma32(strip.ColorHSV(pixelHue)));
-         }
-      }
-      strip.show();
-      firstPixelHue += 40;
-      if((millis() - lastTime) > whiteSpeed){
-         if(++head >= strip.numPixels()){
-            head = 0;
-            if(++loopNum >= loops) 
-               return;
-         }
-         if(++tail >= strip.numPixels()){
-            tail = 0;
-         }
-         lastTime = millis();
       }
    }
 }
