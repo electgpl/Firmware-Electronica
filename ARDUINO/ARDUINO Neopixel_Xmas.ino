@@ -1,9 +1,9 @@
 // Configurar Pin de salida (por defecto 2)
 // Configurar Cantidad de LEDs (por defecto 50)
 // Configurar Brillo global de los leds (por defecto 50)
-// Dentro del loop todas las funciones de los leds, se pueden modificar, cambiar de lugar en la secuencia, eliminar.
+// Dentro del loop todas las funciones de los leds, se pueden modificar, cambiar de lugar en la secuencia, eliminar o comentar.
 
-#include <Adafruit_NeoPixel.h>
+#include <Adafruit_NeoPixel.h> // https://github.com/adafruit/Adafruit_NeoPixel
 
 #define PIN 2                                    //Pin de salida para los leds
 #define STRIPSIZE 50                             //Cantidad de leds
