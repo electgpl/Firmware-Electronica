@@ -53,6 +53,12 @@ void loop() {
     Serial.println("\nConnected.");
   }
 
+    // change the values
+  number1 = analogRead(A0);
+  number2 = bmp.readTemperature();
+  number3 = 0;
+  number4 = bmp.readPressure()/100;
+
   // set the fields with the values
   ThingSpeak.setField(1, number1);
   ThingSpeak.setField(2, number2);
@@ -70,12 +76,6 @@ void loop() {
   else{
     Serial.println("Problem updating channel. HTTP error code " + String(x));
   }
-  
-  // change the values
-  number1 = analogRead(A0);
-  number2 = bmp.readTemperature();
-  number3 = 0;
-  number4 = bmp.readPressure()/100;
   
   delay(20000); // Wait 20 seconds to update the channel again
 }
