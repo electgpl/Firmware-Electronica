@@ -1,7 +1,16 @@
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
 #define DISCHARGE_PIN 8  //NPN + DIODE
 #define PULSE_PIN     9  //VCC + PNP + 100R
 #define ESR_PIN       A0
 #define SAMPLES 100
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET     4
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 byte esrSamples;
 double esr;
@@ -28,9 +37,27 @@ void setup(void){
    pinMode(ESR_PIN, INPUT);
    pinMode(PULSE_PIN, OUTPUT);
    digitalWrite(DISCHARGE_PIN,HIGH);
+   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+   display.setTextColor(SSD1306_WHITE); 
+   display.clearDisplay();
+   display.setCursor(0,0);
+   display.setTextSize(2);
+   display.println(" Medidor ");
+   display.println("   ESR   ");
+   display.println("Eelectgpl");
+   display.write(2);
+   display.display();
+   delay(2000);
    ADCvRef = vRefADC();
    Serial.print("ADCvRef:  ");
    Serial.println(ADCvRef);
+   display.clearDisplay();
+   display.setCursor(0,0);
+   display.setTextSize(2);
+   display.println("Vref");
+   display.println(ADCvRef);
+   display.display();
+   delay(2000);
 }
 
 void loop(void){
@@ -41,17 +68,24 @@ void loop(void){
    delayMicroseconds(5);
    esrSamples = analogRead(ESR_PIN); 
    digitalWrite(PULSE_PIN, HIGH);
-   milliVolts = (esrSamples * 4593.0) / 1023.0;
-   Rm = Rs / ((4593.0 / milliVolts) - 1); //voltage divider (R2=R1(U2/(U1-U2)))
+   milliVolts = (esrSamples * (float)ADCvRef) / 1023.0;
+   Rm = Rs / (((float)ADCvRef / milliVolts) - 1); //voltage divider (R2=R1(U2/(U1-U2)))
    for(int i=0; i<SAMPLES; i++){
       esr = esr + Rm; 
    }
    esr = esr / SAMPLES;
+   display.clearDisplay();
+   display.setTextSize(3);
+   display.setCursor(20,20);
    if(esr<20){
       Serial.println(esr,1);
+      display.print(esr,1); 
+      display.write(233);
    }else{
       Serial.println("OL");
+      display.print("OL"); 
    }
    Serial.println();
+   display.display();  
    delay(100);
 }
