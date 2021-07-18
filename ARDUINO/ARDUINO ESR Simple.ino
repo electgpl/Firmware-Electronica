@@ -3,7 +3,7 @@
 #include <Adafruit_SSD1306.h>
 
 #define DISCHARGE_PIN 8  //NPN + DIODE
-#define PULSE_PIN     9  //VCC + PNP + 100R
+#define PULSE_PIN     9  //VCC + PNP + 1000R
 #define ESR_PIN       A0
 #define SAMPLES 100
 
