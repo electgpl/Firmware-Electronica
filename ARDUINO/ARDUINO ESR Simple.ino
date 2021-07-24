@@ -16,7 +16,6 @@ byte esrSamples;
 double esr;
 int milliVolts;
 int Rs = 1100.0;
-int Rm;
 int ADCvRef = 0;
 
 int vRefADC(){
@@ -66,14 +65,13 @@ void loop(void){
    digitalWrite(DISCHARGE_PIN, LOW);
    digitalWrite(PULSE_PIN,LOW);
    delayMicroseconds(5);
-   esrSamples = analogRead(ESR_PIN); 
+   for(int i=0; i<SAMPLES; i++){
+      esrSamples = esrSamples + analogRead(ESR_PIN); 
+   }
+   esrSamples = esrSamples / SAMPLES;
    digitalWrite(PULSE_PIN, HIGH);
    milliVolts = (esrSamples * (float)ADCvRef) / 1023.0;
-   Rm = Rs / (((float)ADCvRef / milliVolts) - 1); //voltage divider (R2=R1(U2/(U1-U2)))
-   for(int i=0; i<SAMPLES; i++){
-      esr = esr + Rm; 
-   }
-   esr = esr / SAMPLES;
+   esr = Rs / (((float)ADCvRef / milliVolts) - 1); //voltage divider (R2=R1(U2/(U1-U2)))
    display.clearDisplay();
    display.setTextSize(3);
    display.setCursor(20,20);
