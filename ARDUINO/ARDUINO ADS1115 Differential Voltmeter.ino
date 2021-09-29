@@ -1,3 +1,4 @@
+//Atenuador 47k IN 10k IN 47k
 #include <Wire.h>
 #include <Adafruit_ADS1X15.h>
 #include <Adafruit_GFX.h>
@@ -12,7 +13,6 @@ int16_t adc0, adc1;
 float volts0, volts1;
 float channel0, channel1;
 int SAMPLES = 50;
-float ATT = 13.3;
 
 void setup(){
    ads.begin();
@@ -41,11 +41,11 @@ void loop(){
       channel0 = channel0 + volts0;
       channel1 = channel1 + volts1;
    }
-   channel0 = (channel0 / SAMPLES) * ATT;
-   channel1 = (channel1 / SAMPLES) * ATT;
+   channel0 = (channel0 / SAMPLES) * 10.64;
+   channel1 = (channel1 / SAMPLES) * 10.9;
    display.clearDisplay();
    display.setTextSize(3);
-   display.setCursor(0,0);  display.print(channel0,3); 
-   display.setCursor(0,35); display.print(channel1,3); 
+   display.setCursor(15,0);  display.print(channel1,2); 
+   display.setCursor(15,35); display.print(channel0,2); 
    display.display();
 }
