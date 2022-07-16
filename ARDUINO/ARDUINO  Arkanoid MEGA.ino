@@ -1,5 +1,5 @@
 #include "LedControl.h"
-//game orientation
+//game orientation TEST!
 //0 == regular
 //1 == paddle on the rightmost column
 //2 == upside-down
