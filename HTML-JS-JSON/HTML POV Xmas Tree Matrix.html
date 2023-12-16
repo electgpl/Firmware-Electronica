@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Mapa de Bits</title>
+  <style>
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(20, 20px);
+      grid-template-rows: repeat(24, 20px);
+      gap: 1px;
+    }
+
+    .grid-item {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #ddd;
+      background-color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h2>Generador de Mapa de Bits</h2>
+  <div class="grid-container" id="gridContainer"></div>
+  <button onclick="generateCode()">Generar Código</button>
+  <textarea id="codeOutput" rows="10" cols="30"></textarea>
+
+  <script>
+    const gridContainer = document.getElementById('gridContainer');
+    const codeOutput = document.getElementById('codeOutput');
+    let matrix = [];
+
+    // Inicializar la cuadrícula
+    for (let i = 0; i < 24; i++) {
+      matrix[i] = [];
+      for (let j = 0; j < 20; j++) {
+        const cell = document.createElement('div');
+        cell.className = 'grid-item';
+        cell.addEventListener('click', () => toggleCell(i, j));
+        gridContainer.appendChild(cell);
+        matrix[i][j] = 0;
+      }
+    }
+
+    // Función para cambiar el estado de una celda
+    function toggleCell(row, col) {
+      matrix[row][col] = (matrix[row][col] + 1) % 7;
+      updateGrid();
+    }
+
+    // Actualizar la apariencia de la cuadrícula
+    function updateGrid() {
+      const cells = document.querySelectorAll('.grid-item');
+      cells.forEach((cell, index) => {
+        const row = Math.floor(index / 20);
+        const col = index % 20;
+        cell.style.backgroundColor = getColor(matrix[row][col]);
+      });
+    }
+
+    // Obtener el color CSS según el número
+    function getColor(number) {
+      switch (number) {
+        case 0:
+          return '#ccc';
+        case 1:
+          return 'green';
+        case 2:
+          return 'red';
+        case 3:
+          return 'blue';
+        case 4:
+          return 'brown';
+        case 5:
+          return 'yellow';
+        case 6:
+          return 'white';
+        default:
+          return '#ccc';
+      }
+    }
+
+    // Generar el código de matriz
+    function generateCode() {
+      let code = 'const uint8_t christmasTreeMap[24][20] = {\n';
+      for (let j = 0; j < 20; j++) {
+		code += '   {' + matrix.map(row => row[j]).reverse().join(', ') + '},\n';
+      }
+      code += '};';
+      codeOutput.value = code;
+    }
+  </script>
+</body>
+</html>
